@@ -30,7 +30,7 @@ mod_ssl:
 
 {{ apache.confdir }}/ssl.conf:
   file.managed:
-    - source: salt://apache/files/{{ salt['grains.get']('os_family') }}/ssl.conf.jinja
+    - source: salt://apache/files/{{ salt['grains.get']('os_family') }}/ssl.conf
     - mode: 644
     - template: jinja
     - require:
