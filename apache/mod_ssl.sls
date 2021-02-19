@@ -1,9 +1,9 @@
 {% from "apache/map.jinja" import apache with context %}
 
+{% if grains['os_family']=="Debian" %}
+
 include:
   - apache
-
-{% if grains['os_family']=="Debian" %}
 
 a2enmod mod_ssl:
   cmd.run:
@@ -17,9 +17,22 @@ a2enmod mod_ssl:
 
 {% elif grains['os_family']=="RedHat" %}
 
+include:
+  - apache
+
 mod_ssl:
   pkg.installed:
     - name: {{ apache.mod_ssl }}
+    - require:
+      - pkg: apache
+    - watch_in:
+      - module: apache-restart
+
+{{ apache.confdir }}/ssl.conf:
+  file.managed:
+    - source: salt://apache/files/{{ salt['grains.get']('os_family') }}/ssl.conf.jinja
+    - mode: 644
+    - template: jinja
     - require:
       - pkg: apache
     - watch_in:
